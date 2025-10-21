@@ -8,7 +8,7 @@ N="\e[0m"
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
-#SCRIPT_DIR=$PWD
+SCRIPT_DIR=$PWD
 MONGODB_HOST=mongodb.dawsmani.site
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 
@@ -63,7 +63,7 @@ VALIDATE $? "unzip catalogue"
 npm install &>>$LOG_FILE
 VALIDATE $? "Install dependencies"
 
-cp catalouge.service /etc/systemd/system/catalouge.service
+cp $SCRIPT_DIR/catalouge.service /etc/systemd/system/catalouge.service
 VALIDATE $? "Copy systemctl service"
 
 systemctl daemon-reload
