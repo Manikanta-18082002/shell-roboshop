@@ -27,25 +27,19 @@ VALIDATE(){ # functions receive inputs through args just like shell script args
     fi
 }
 
-dnf module disable redis -y &>> $LOG_FILE
-VALIDATE $? "Disable redis"
+cp rabbit.repo /etc/yum.repos.d/rabbitmq.repo &>> $LOG_FILE
+VALIDATE $? "Copied rabbitmq repo"
 
-dnf module enable redis:7 -y &>> $LOG_FILE
-VALIDATE $? "Enable redis"
+dnf install rabbitmq-server -y &>> $LOG_FILE
+VALIDATE $? "Installing rabbitmq server"
 
-dnf install redis -y &>> $LOG_FILE
-VALIDATE $? "Install redis"
+systemctl enable rabbitmq-server  &>> $LOG_FILE
+VALIDATE $? "Enabled rabbitmq-server"
 
-sed -i -e 's/127.0.0.1/0.0.0.0/g'  -e '/protected-mode/ c protected-mode no' /etc/redis/redis.conf
-VALIDATE $? "Allowing Remote connections to Redis"
+systemctl start rabbitmq-server &>> $LOG_FILE
+VALIDATE $? "Started rabbitmq-server"
 
-systemctl enable redis &>>$LOG_FILE
-VALIDATE $? "Enabling Redis"
 
-systemctl start redis &>>$LOG_FILE
-VALIDATE $? "Starting Redis"
-
-END_TIME=$(date +%s)
-START_TIME=$(date +%s)
-TOTAL_TIME=$((END_TIME - START_TIME))
-echo -e "Script executed in: $Y $TOTAL_TIME Seconds $N"
+rabbitmqctl add_user roboshop roboshop123 &>> $LOG_FILE
+rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*" &>> $LOG_FILE
+VALIDATE $? "Setting up permissions"
