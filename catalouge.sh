@@ -79,4 +79,3 @@ mongosh --host mongodb.dawsmani.site </app/db/master-data.js &>> $LOG_FILE
 
 systemctl restart catalogue
 VALIDATE $? "Restarted catalogue"
-
